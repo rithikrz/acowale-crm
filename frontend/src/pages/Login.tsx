@@ -8,7 +8,7 @@ export const Login: React.FC = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
@@ -51,16 +51,22 @@ export const Login: React.FC = () => {
       <div className="card" style={styles.authCard}>
         <div style={styles.authHeader}>
           <Link to="/" style={{ textDecoration: 'none' }}>
-            <h1 className="nav-logo" style={{ fontSize: '2rem' }}>🐮 Acowale CRM</h1>
+            <h1 className="nav-logo" style={{ fontSize: '2rem' }}>
+              🐮 Acowale CRM
+            </h1>
           </Link>
-          <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>Log in to manage your forms</p>
+          <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>
+            Log in to manage your forms
+          </p>
         </div>
 
         {error && <div className="alert alert-danger">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label" htmlFor="email">Email Address</label>
+            <label className="form-label" htmlFor="email">
+              Email Address
+            </label>
             <input
               className="form-input"
               type="email"
@@ -74,7 +80,9 @@ export const Login: React.FC = () => {
           </div>
 
           <div className="form-group" style={{ marginBottom: '28px' }}>
-            <label className="form-label" htmlFor="password">Password</label>
+            <label className="form-label" htmlFor="password">
+              Password
+            </label>
             <input
               className="form-input"
               type="password"
@@ -87,13 +95,21 @@ export const Login: React.FC = () => {
             {fieldErrors.password && <span className="error-msg">{fieldErrors.password}</span>}
           </div>
 
-          <button className="btn btn-primary" type="submit" style={{ width: '100%' }} disabled={loading}>
+          <button
+            className="btn btn-primary"
+            type="submit"
+            style={{ width: '100%' }}
+            disabled={loading}
+          >
             {loading ? 'Logging in...' : 'Sign In'}
           </button>
         </form>
 
         <div style={styles.authFooter}>
-          Don't have an account? <Link to="/signup" style={styles.authLink}>Sign up here</Link>
+          Don't have an account?{' '}
+          <Link to="/signup" style={styles.authLink}>
+            Sign up here
+          </Link>
         </div>
       </div>
     </div>

@@ -30,7 +30,11 @@ export const PublicForm: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<{ category?: string; comment?: string; email?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{
+    category?: string;
+    comment?: string;
+    email?: string;
+  }>({});
 
   useEffect(() => {
     const fetchForm = async () => {
@@ -110,7 +114,8 @@ export const PublicForm: React.FC = () => {
 
       setSubmitted(true);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'An error occurred while submitting feedback.';
+      const msg =
+        err instanceof Error ? err.message : 'An error occurred while submitting feedback.';
       setSubmitError(msg);
     } finally {
       setSubmitting(false);
@@ -132,11 +137,19 @@ export const PublicForm: React.FC = () => {
       <div className="public-form-container">
         <div className="card" style={{ textAlign: 'center', padding: '48px 32px' }}>
           <div style={{ fontSize: '4.5rem', marginBottom: '20px' }}>🔒</div>
-          <h1 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: '1.8rem', marginBottom: '12px' }}>
+          <h1
+            style={{
+              fontFamily: 'Outfit, sans-serif',
+              fontWeight: 800,
+              fontSize: '1.8rem',
+              marginBottom: '12px',
+            }}
+          >
             Form Inactive
           </h1>
           <p style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>
-            This form is no longer accepting responses or does not exist. Please contact the business owner for assistance.
+            This form is no longer accepting responses or does not exist. Please contact the
+            business owner for assistance.
           </p>
         </div>
       </div>
@@ -149,13 +162,21 @@ export const PublicForm: React.FC = () => {
       <div className="public-form-container">
         <div className="card" style={{ textAlign: 'center', padding: '48px 32px' }}>
           <div style={{ fontSize: '4.5rem', marginBottom: '20px' }}>✨</div>
-          <h1 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: '1.8rem', marginBottom: '12px' }}>
+          <h1
+            style={{
+              fontFamily: 'Outfit, sans-serif',
+              fontWeight: 800,
+              fontSize: '1.8rem',
+              marginBottom: '12px',
+            }}
+          >
             Thank You!
           </h1>
           <p style={{ color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '28px' }}>
-            Your feedback has been successfully submitted to <strong>{form.title}</strong>. We appreciate you taking the time to share your response.
+            Your feedback has been successfully submitted to <strong>{form.title}</strong>. We
+            appreciate you taking the time to share your response.
           </p>
-          <button 
+          <button
             className="btn btn-primary"
             onClick={() => {
               setSubmitted(false);
@@ -192,7 +213,9 @@ export const PublicForm: React.FC = () => {
         <form onSubmit={handleSubmit}>
           {/* Category Dropdown */}
           <div className="form-group">
-            <label className="form-label" htmlFor="category">Feedback Category</label>
+            <label className="form-label" htmlFor="category">
+              Feedback Category
+            </label>
             <select
               className="form-select"
               id="category"
@@ -229,7 +252,9 @@ export const PublicForm: React.FC = () => {
 
           {/* Comment Textarea */}
           <div className="form-group">
-            <label className="form-label" htmlFor="comment">Your Comments</label>
+            <label className="form-label" htmlFor="comment">
+              Your Comments
+            </label>
             <textarea
               className="form-textarea"
               id="comment"
@@ -239,15 +264,15 @@ export const PublicForm: React.FC = () => {
               disabled={submitting}
               maxLength={1000}
             />
-            <div className="char-counter">
-              {comment.length} / 1000 characters
-            </div>
+            <div className="char-counter">{comment.length} / 1000 characters</div>
             {fieldErrors.comment && <span className="error-msg">{fieldErrors.comment}</span>}
           </div>
 
           {/* Optional Email */}
           <div className="form-group" style={{ marginBottom: '28px' }}>
-            <label className="form-label" htmlFor="email">Your Email Address (Optional)</label>
+            <label className="form-label" htmlFor="email">
+              Your Email Address (Optional)
+            </label>
             <input
               className="form-input"
               type="email"
@@ -261,7 +286,12 @@ export const PublicForm: React.FC = () => {
           </div>
 
           {/* Submit button */}
-          <button className="btn btn-primary" type="submit" style={{ width: '100%' }} disabled={submitting}>
+          <button
+            className="btn btn-primary"
+            type="submit"
+            style={{ width: '100%' }}
+            disabled={submitting}
+          >
             {submitting ? 'Submitting response...' : 'Submit Feedback'}
           </button>
         </form>

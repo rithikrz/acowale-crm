@@ -15,7 +15,9 @@ const createFormSchema = z.object({
   body: z.object({
     title: z.string().min(3, 'Title must be at least 3 characters long'),
     description: z.string().optional(),
-    categories: z.array(z.string().min(1, 'Category name cannot be empty')).min(1, 'At least one category is required'),
+    categories: z
+      .array(z.string().min(1, 'Category name cannot be empty'))
+      .min(1, 'At least one category is required'),
   }),
 });
 
@@ -23,7 +25,10 @@ const patchFormSchema = z.object({
   body: z.object({
     title: z.string().min(3, 'Title must be at least 3 characters long').optional(),
     description: z.string().optional(),
-    categories: z.array(z.string().min(1, 'Category name cannot be empty')).min(1, 'At least one category is required').optional(),
+    categories: z
+      .array(z.string().min(1, 'Category name cannot be empty'))
+      .min(1, 'At least one category is required')
+      .optional(),
     isActive: z.boolean().optional(),
   }),
   params: z.object({
@@ -38,7 +43,10 @@ const feedbackQuerySchema = z.object({
     search: z.string().optional(),
     page: z.preprocess((val) => val ?? '1', z.string().regex(/^\d+$/).transform(Number)),
     limit: z.preprocess((val) => val ?? '10', z.string().regex(/^\d+$/).transform(Number)),
-    sortBy: z.preprocess((val) => val ?? 'createdAt', z.enum(['createdAt', 'rating', 'category', 'status'])),
+    sortBy: z.preprocess(
+      (val) => val ?? 'createdAt',
+      z.enum(['createdAt', 'rating', 'category', 'status']),
+    ),
     sortOrder: z.preprocess((val) => val ?? 'desc', z.enum(['asc', 'desc'])),
   }),
   params: z.object({
@@ -305,154 +313,160 @@ router.delete('/:id', async (req: AuthenticatedRequest, res, next) => {
 });
 
 // GET /api/forms/:id/feedback - Paginated, filtered, and sorted feedback
-router.get('/:id/feedback', validate(feedbackQuerySchema), async (req: AuthenticatedRequest, res, next) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user!.id;
-    const { category, status, search, page, limit, sortBy, sortOrder } = req.query as unknown as FeedbackQueryParams;
+router.get(
+  '/:id/feedback',
+  validate(feedbackQuerySchema),
+  async (req: AuthenticatedRequest, res, next) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user!.id;
+      const { category, status, search, page, limit, sortBy, sortOrder } =
+        req.query as unknown as FeedbackQueryParams;
 
-    const form = await prisma.form.findUnique({
-      where: { id },
-    });
+      const form = await prisma.form.findUnique({
+        where: { id },
+      });
 
-    if (!form || form.userId !== userId) {
-      throw new AppError(404, 'Form not found');
+      if (!form || form.userId !== userId) {
+        throw new AppError(404, 'Form not found');
+      }
+
+      const whereClause: Prisma.FeedbackWhereInput = { formId: id };
+
+      if (category) {
+        whereClause.category = category;
+      }
+
+      if (status) {
+        whereClause.status = status;
+      }
+
+      if (search) {
+        whereClause.OR = [{ comment: { contains: search } }, { email: { contains: search } }];
+      }
+
+      const skip = (page - 1) * limit;
+      const take = limit;
+
+      const [feedbacks, totalCount] = await prisma.$transaction([
+        prisma.feedback.findMany({
+          where: whereClause,
+          orderBy: { [sortBy]: sortOrder },
+          skip,
+          take,
+        }),
+        prisma.feedback.count({ where: whereClause }),
+      ]);
+
+      res.json({
+        success: true,
+        data: feedbacks,
+        meta: {
+          total: totalCount,
+          page,
+          limit,
+          totalPages: Math.ceil(totalCount / limit),
+        },
+      });
+    } catch (error) {
+      next(error);
     }
-
-    const whereClause: Prisma.FeedbackWhereInput = { formId: id };
-
-    if (category) {
-      whereClause.category = category;
-    }
-
-    if (status) {
-      whereClause.status = status;
-    }
-
-    if (search) {
-      whereClause.OR = [
-        { comment: { contains: search } },
-        { email: { contains: search } },
-      ];
-    }
-
-    const skip = (page - 1) * limit;
-    const take = limit;
-
-    const [feedbacks, totalCount] = await prisma.$transaction([
-      prisma.feedback.findMany({
-        where: whereClause,
-        orderBy: { [sortBy]: sortOrder },
-        skip,
-        take,
-      }),
-      prisma.feedback.count({ where: whereClause }),
-    ]);
-
-    res.json({
-      success: true,
-      data: feedbacks,
-      meta: {
-        total: totalCount,
-        page,
-        limit,
-        totalPages: Math.ceil(totalCount / limit),
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
 
 // GET /api/forms/:id/analytics - Detailed aggregations and days-trend
-router.get('/:id/analytics', validate(analyticsQuerySchema), async (req: AuthenticatedRequest, res, next) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user!.id;
-    const { days } = req.query as unknown as AnalyticsQueryParams;
+router.get(
+  '/:id/analytics',
+  validate(analyticsQuerySchema),
+  async (req: AuthenticatedRequest, res, next) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user!.id;
+      const { days } = req.query as unknown as AnalyticsQueryParams;
 
-    const form = await prisma.form.findUnique({
-      where: { id },
-    });
+      const form = await prisma.form.findUnique({
+        where: { id },
+      });
 
-    if (!form || form.userId !== userId) {
-      throw new AppError(404, 'Form not found');
-    }
-
-    const totalCount = await prisma.feedback.count({
-      where: { formId: id },
-    });
-
-    const ratingAggregate = await prisma.feedback.aggregate({
-      where: { formId: id, rating: { not: null } },
-      _avg: { rating: true },
-    });
-    const averageRating = ratingAggregate._avg.rating || 0;
-
-    const categoryGroup = await prisma.feedback.groupBy({
-      by: ['category'],
-      where: { formId: id },
-      _count: { category: true },
-    });
-    const categoryDistribution = categoryGroup.reduce((acc: Record<string, number>, curr) => {
-      acc[curr.category] = curr._count.category;
-      return acc;
-    }, {});
-
-    const statusGroup = await prisma.feedback.groupBy({
-      by: ['status'],
-      where: { formId: id },
-      _count: { status: true },
-    });
-    const statusBreakdown = statusGroup.reduce((acc: Record<string, number>, curr) => {
-      acc[curr.status] = curr._count.status;
-      return acc;
-    }, {});
-
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
-    startDate.setHours(0, 0, 0, 0);
-
-    const recentFeedbacks = await prisma.feedback.findMany({
-      where: {
-        formId: id,
-        createdAt: { gte: startDate },
-      },
-      select: { createdAt: true },
-    });
-
-    const trendMap: Record<string, number> = {};
-    for (let i = 0; i <= days; i++) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toISOString().split('T')[0];
-      trendMap[dateStr] = 0;
-    }
-
-    recentFeedbacks.forEach((f) => {
-      const dateStr = f.createdAt.toISOString().split('T')[0];
-      if (trendMap[dateStr] !== undefined) {
-        trendMap[dateStr]++;
+      if (!form || form.userId !== userId) {
+        throw new AppError(404, 'Form not found');
       }
-    });
 
-    const trend = Object.entries(trendMap)
-      .map(([date, count]) => ({ date, count }))
-      .sort((a, b) => a.date.localeCompare(b.date));
+      const totalCount = await prisma.feedback.count({
+        where: { formId: id },
+      });
 
-    res.json({
-      success: true,
-      data: {
-        totalCount,
-        averageRating,
-        categoryDistribution,
-        statusBreakdown,
-        trend,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+      const ratingAggregate = await prisma.feedback.aggregate({
+        where: { formId: id, rating: { not: null } },
+        _avg: { rating: true },
+      });
+      const averageRating = ratingAggregate._avg.rating || 0;
+
+      const categoryGroup = await prisma.feedback.groupBy({
+        by: ['category'],
+        where: { formId: id },
+        _count: { category: true },
+      });
+      const categoryDistribution = categoryGroup.reduce((acc: Record<string, number>, curr) => {
+        acc[curr.category] = curr._count.category;
+        return acc;
+      }, {});
+
+      const statusGroup = await prisma.feedback.groupBy({
+        by: ['status'],
+        where: { formId: id },
+        _count: { status: true },
+      });
+      const statusBreakdown = statusGroup.reduce((acc: Record<string, number>, curr) => {
+        acc[curr.status] = curr._count.status;
+        return acc;
+      }, {});
+
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+      startDate.setHours(0, 0, 0, 0);
+
+      const recentFeedbacks = await prisma.feedback.findMany({
+        where: {
+          formId: id,
+          createdAt: { gte: startDate },
+        },
+        select: { createdAt: true },
+      });
+
+      const trendMap: Record<string, number> = {};
+      for (let i = 0; i <= days; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        trendMap[dateStr] = 0;
+      }
+
+      recentFeedbacks.forEach((f) => {
+        const dateStr = f.createdAt.toISOString().split('T')[0];
+        if (trendMap[dateStr] !== undefined) {
+          trendMap[dateStr]++;
+        }
+      });
+
+      const trend = Object.entries(trendMap)
+        .map(([date, count]) => ({ date, count }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      res.json({
+        success: true,
+        data: {
+          totalCount,
+          averageRating,
+          categoryDistribution,
+          statusBreakdown,
+          trend,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 export default router;

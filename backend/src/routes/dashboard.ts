@@ -65,7 +65,7 @@ router.get('/summary', async (req: AuthenticatedRequest, res, next) => {
         RECEIVED: 0,
         IN_PROGRESS: 0,
         RESOLVED: 0,
-      }
+      },
     );
 
     const response: ApiResponse<unknown> = {

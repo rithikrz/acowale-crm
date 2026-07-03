@@ -69,7 +69,7 @@ router.post('/signup', validate(signupSchema), async (req, res, next) => {
     const token = jwt.sign(
       { userId: user.id, email: user.email, businessName: user.businessName },
       JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '7d' },
     );
 
     // Set cookie
@@ -124,7 +124,7 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
     const token = jwt.sign(
       { userId: user.id, email: user.email, businessName: user.businessName },
       JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '7d' },
     );
 
     // Set cookie

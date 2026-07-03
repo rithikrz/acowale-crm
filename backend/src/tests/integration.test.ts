@@ -97,8 +97,8 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
       body: JSON.stringify({
         email: 'usera@acowale.com',
         password: 'password123',
-        businessName: 'Business A'
-      })
+        businessName: 'Business A',
+      }),
     });
     assert.strictEqual(signupRes.status, 201);
     const signupData = (await signupRes.json()) as TestSignupResponse;
@@ -113,8 +113,8 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
       body: JSON.stringify({
         email: 'usera@acowale.com',
         password: 'differentpassword',
-        businessName: 'Business A'
-      })
+        businessName: 'Business A',
+      }),
     });
     assert.strictEqual(dupRes.status, 400);
 
@@ -124,8 +124,8 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: 'usera@acowale.com',
-        password: 'wrongpassword'
-      })
+        password: 'wrongpassword',
+      }),
     });
     assert.strictEqual(wrongLoginRes.status, 401);
 
@@ -135,8 +135,8 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: 'usera@acowale.com',
-        password: 'password123'
-      })
+        password: 'password123',
+      }),
     });
     assert.strictEqual(loginRes.status, 200);
     userACookie = getCookieHeader(loginRes.headers);
@@ -148,8 +148,8 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
       body: JSON.stringify({
         email: 'userb@acowale.com',
         password: 'password123',
-        businessName: 'Business B'
-      })
+        businessName: 'Business B',
+      }),
     });
     assert.strictEqual(signupBRes.status, 201);
     userBCookie = getCookieHeader(signupBRes.headers);
@@ -161,25 +161,25 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': userACookie
+        Cookie: userACookie,
       },
       body: JSON.stringify({
         title: 'Form A Survey',
         description: 'Customer feedback for Form A',
-        categories: ['Bugs', 'Features', 'Pricing']
-      })
+        categories: ['Bugs', 'Features', 'Pricing'],
+      }),
     });
     assert.strictEqual(createRes.status, 201);
     const createData = (await createRes.json()) as TestFormResponse;
     assert.strictEqual(createData.success, true);
     assert.strictEqual(createData.data.publicUrl, `/f/${createData.data.slug}`);
-    
+
     formAId = createData.data.id;
     formASlug = createData.data.slug;
 
     // User B attempts to access User A's Form A -> returns 404 (scoping / no leakage)
     const getResB = await fetch(`${BASE_URL}/forms/${formAId}`, {
-      headers: { 'Cookie': userBCookie }
+      headers: { Cookie: userBCookie },
     });
     assert.strictEqual(getResB.status, 404);
 
@@ -188,9 +188,9 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': userBCookie
+        Cookie: userBCookie,
       },
-      body: JSON.stringify({ title: 'Hacked Title' })
+      body: JSON.stringify({ title: 'Hacked Title' }),
     });
     assert.strictEqual(patchResB.status, 404);
 
@@ -199,23 +199,26 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': userACookie
+        Cookie: userACookie,
       },
       body: JSON.stringify({
         description: 'Updated feedback description',
-        categories: ['Bugs', 'Features', 'Billing', 'Docs'] // updated categories
-      })
+        categories: ['Bugs', 'Features', 'Billing', 'Docs'], // updated categories
+      }),
     });
     assert.strictEqual(patchResA.status, 200);
 
     // User A gets Form A details successfully
     const getResA = await fetch(`${BASE_URL}/forms/${formAId}`, {
-      headers: { 'Cookie': userACookie }
+      headers: { Cookie: userACookie },
     });
     assert.strictEqual(getResA.status, 200);
     const getAData = (await getResA.json()) as TestFormResponse;
     assert.strictEqual(getAData.data.description, 'Updated feedback description');
-    assert.deepStrictEqual([...(getAData.data.categories || [])].sort(), ['Bugs', 'Features', 'Billing', 'Docs'].sort());
+    assert.deepStrictEqual(
+      [...(getAData.data.categories || [])].sort(),
+      ['Bugs', 'Features', 'Billing', 'Docs'].sort(),
+    );
   });
 
   await t.test('Public Submissions & Validation Scenarios', async () => {
@@ -224,7 +227,10 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
     assert.strictEqual(pubFetchRes.status, 200);
     const pubFetchData = (await pubFetchRes.json()) as TestPublicFormResponse;
     assert.strictEqual(pubFetchData.data.title, 'Form A Survey');
-    assert.deepStrictEqual([...pubFetchData.data.categories].sort(), ['Bugs', 'Features', 'Billing', 'Docs'].sort());
+    assert.deepStrictEqual(
+      [...pubFetchData.data.categories].sort(),
+      ['Bugs', 'Features', 'Billing', 'Docs'].sort(),
+    );
 
     // 2. Submit feedback with an invalid category -> returns 400
     const failFeedback = await fetch(`${BASE_URL}/public/forms/${formASlug}/feedback`, {
@@ -232,8 +238,8 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         category: 'NonExistentCategory',
-        comment: 'This is a test comment from user.'
-      })
+        comment: 'This is a test comment from user.',
+      }),
     });
     assert.strictEqual(failFeedback.status, 400);
 
@@ -245,8 +251,8 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
         category: 'Bugs',
         comment: 'There is a loading lag on the homepage.',
         email: 'tester@acowale.com',
-        rating: 4
-      })
+        rating: 4,
+      }),
     });
     assert.strictEqual(successFeedback.status, 201);
   });
@@ -254,7 +260,7 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
   await t.test('Feedback Queries & Analytics', async () => {
     // Query feedback for Form A
     const feedbackQuery = await fetch(`${BASE_URL}/forms/${formAId}/feedback?limit=5`, {
-      headers: { 'Cookie': userACookie }
+      headers: { Cookie: userACookie },
     });
     assert.strictEqual(feedbackQuery.status, 200);
     const fData = (await feedbackQuery.json()) as TestFeedbackListResponse;
@@ -263,7 +269,7 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
 
     // Get Form A Analytics
     const analyticsRes = await fetch(`${BASE_URL}/forms/${formAId}/analytics`, {
-      headers: { 'Cookie': userACookie }
+      headers: { Cookie: userACookie },
     });
     assert.strictEqual(analyticsRes.status, 200);
     const aData = (await analyticsRes.json()) as TestAnalyticsResponse;
@@ -276,13 +282,13 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
     // User A deletes Form A
     const delRes = await fetch(`${BASE_URL}/forms/${formAId}`, {
       method: 'DELETE',
-      headers: { 'Cookie': userACookie }
+      headers: { Cookie: userACookie },
     });
     assert.strictEqual(delRes.status, 200);
 
     // Form A detail check: is isActive false?
     const checkRes = await fetch(`${BASE_URL}/forms/${formAId}`, {
-      headers: { 'Cookie': userACookie }
+      headers: { Cookie: userACookie },
     });
     assert.strictEqual(checkRes.status, 200);
     const checkData = (await checkRes.json()) as TestFormResponse;
@@ -298,8 +304,8 @@ test('Acowale CRM - Phase 2 E2E Integration Suite', async (t) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         category: 'Bugs',
-        comment: 'Should fail since form is soft-deleted.'
-      })
+        comment: 'Should fail since form is soft-deleted.',
+      }),
     });
     assert.strictEqual(submitInactive.status, 404);
   });

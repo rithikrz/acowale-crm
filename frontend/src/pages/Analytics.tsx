@@ -47,7 +47,15 @@ const DonutChart: React.FC<{ data: Record<string, number> }> = ({ data }) => {
 
   if (total === 0) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px', color: 'var(--text-muted)' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '200px',
+          color: 'var(--text-muted)',
+        }}
+      >
         No category data available
       </div>
     );
@@ -98,29 +106,60 @@ const DonutChart: React.FC<{ data: Record<string, number> }> = ({ data }) => {
             );
           })}
         </svg>
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          pointerEvents: 'none'
-        }}>
-          <span style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)', fontFamily: 'Outfit, sans-serif' }}>{total}</span>
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+          }}
+        >
+          <span
+            style={{
+              fontSize: '1.75rem',
+              fontWeight: 800,
+              color: 'var(--text-main)',
+              fontFamily: 'Outfit, sans-serif',
+            }}
+          >
+            {total}
+          </span>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Feedback</span>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 16px', justifyContent: 'center', width: '100%' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '10px 16px',
+          justifyContent: 'center',
+          width: '100%',
+        }}
+      >
         {entries.map(([key, val], idx) => (
-          <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: colors[idx % colors.length] }}></span>
+          <div
+            key={key}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem' }}
+          >
+            <span
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: colors[idx % colors.length],
+              }}
+            ></span>
             <span style={{ color: 'var(--text-muted)' }}>{key}:</span>
-            <strong style={{ color: 'var(--text-main)' }}>{val} ({Math.round((val / total) * 100)}%)</strong>
+            <strong style={{ color: 'var(--text-main)' }}>
+              {val} ({Math.round((val / total) * 100)}%)
+            </strong>
           </div>
         ))}
       </div>
@@ -134,7 +173,15 @@ const DonutChart: React.FC<{ data: Record<string, number> }> = ({ data }) => {
 const TrendChart: React.FC<{ trend: Array<{ date: string; count: number }> }> = ({ trend }) => {
   if (trend.length === 0) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '220px', color: 'var(--text-muted)' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '220px',
+          color: 'var(--text-muted)',
+        }}
+      >
         No trend data available
       </div>
     );
@@ -163,9 +210,10 @@ const TrendChart: React.FC<{ trend: Array<{ date: string; count: number }> }> = 
     return acc + (index === 0 ? `M ${p.x} ${p.y}` : ` L ${p.x} ${p.y}`);
   }, '');
 
-  const areaD = points.length > 0
-    ? `${pathD} L ${points[points.length - 1].x} ${paddingTop + chartHeight} L ${points[0].x} ${paddingTop + chartHeight} Z`
-    : '';
+  const areaD =
+    points.length > 0
+      ? `${pathD} L ${points[points.length - 1].x} ${paddingTop + chartHeight} L ${points[0].x} ${paddingTop + chartHeight} Z`
+      : '';
 
   const gridLines = Array.from({ length: 4 }).map((_, idx) => {
     const yVal = paddingTop + (idx / 3) * chartHeight;
@@ -175,11 +223,16 @@ const TrendChart: React.FC<{ trend: Array<{ date: string; count: number }> }> = 
 
   return (
     <div style={{ width: '100%', overflowX: 'auto' }}>
-      <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} style={{ minWidth: '400px' }}>
+      <svg
+        width="100%"
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        style={{ minWidth: '400px' }}
+      >
         <defs>
           <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#818cf8" stopOpacity="0.35"/>
-            <stop offset="100%" stopColor="#818cf8" stopOpacity="0.0"/>
+            <stop offset="0%" stopColor="#818cf8" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#818cf8" stopOpacity="0.0" />
           </linearGradient>
         </defs>
 
@@ -213,19 +266,13 @@ const TrendChart: React.FC<{ trend: Array<{ date: string; count: number }> }> = 
         )}
 
         {points.map((p, idx) => {
-          const isKeyPoint = idx === 0 || idx === Math.floor(points.length / 2) || idx === points.length - 1;
+          const isKeyPoint =
+            idx === 0 || idx === Math.floor(points.length / 2) || idx === points.length - 1;
           const formattedDate = p.date.split('-').slice(1).join('/');
 
           return (
             <g key={idx}>
-              <circle
-                cx={p.x}
-                cy={p.y}
-                r="3.5"
-                fill="#ffffff"
-                stroke="#818cf8"
-                strokeWidth="2"
-              />
+              <circle cx={p.x} cy={p.y} r="3.5" fill="#ffffff" stroke="#818cf8" strokeWidth="2" />
               <title>{`${p.date}: ${p.count} submissions`}</title>
               {isKeyPoint && (
                 <text
@@ -299,14 +346,17 @@ export const Analytics: React.FC = () => {
         const formData = await formRes.json();
 
         // 2. Fetch Aggregated Analytics
-        const analyticsRes = await fetch(`${API_BASE}/forms/${id}/analytics?days=30`, { credentials: 'include' });
+        const analyticsRes = await fetch(`${API_BASE}/forms/${id}/analytics?days=30`, {
+          credentials: 'include',
+        });
         if (!analyticsRes.ok) throw new Error('Failed to load form analytics');
         const analyticsData = await analyticsRes.json();
 
         if (formData.success) setForm(formData.data);
         if (analyticsData.success) setAnalytics(analyticsData.data);
       } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'An error occurred loading analytics data.';
+        const msg =
+          err instanceof Error ? err.message : 'An error occurred loading analytics data.';
         setError(msg);
       } finally {
         setLoading(false);
@@ -327,16 +377,18 @@ export const Analytics: React.FC = () => {
           page: currentPage.toString(),
           limit: '5',
           sortBy: 'createdAt',
-          sortOrder: 'desc'
+          sortOrder: 'desc',
         });
 
         if (categoryFilter) queryParams.append('category', categoryFilter);
         if (statusFilter) queryParams.append('status', statusFilter);
         if (debouncedSearch) queryParams.append('search', debouncedSearch);
 
-        const response = await fetch(`${API_BASE}/forms/${id}/feedback?${queryParams.toString()}`, { credentials: 'include' });
+        const response = await fetch(`${API_BASE}/forms/${id}/feedback?${queryParams.toString()}`, {
+          credentials: 'include',
+        });
         if (!response.ok) throw new Error('Failed to fetch submissions list');
-        
+
         const resData = await response.json();
         if (resData.success) {
           setSubmissions(resData.data);
@@ -358,20 +410,24 @@ export const Analytics: React.FC = () => {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
-        credentials: 'include'
+        credentials: 'include',
       });
 
       if (response.ok) {
         // Update list status locally
-        setSubmissions(prev =>
-          prev.map(item => item.id === submissionId ? { ...item, status: newStatus as 'RECEIVED' | 'IN_PROGRESS' | 'RESOLVED' } : item)
+        setSubmissions((prev) =>
+          prev.map((item) =>
+            item.id === submissionId
+              ? { ...item, status: newStatus as 'RECEIVED' | 'IN_PROGRESS' | 'RESOLVED' }
+              : item,
+          ),
         );
 
         // Update aggregated count locally
         if (analytics) {
           const updatedBreakdown = { ...analytics.statusBreakdown };
           // Increment new status, decrement old status if present
-          const oldItem = submissions.find(item => item.id === submissionId);
+          const oldItem = submissions.find((item) => item.id === submissionId);
           if (oldItem) {
             const oldStatus = oldItem.status;
             if (updatedBreakdown[oldStatus]) updatedBreakdown[oldStatus]--;
@@ -407,11 +463,18 @@ export const Analytics: React.FC = () => {
     return (
       <div className="layout-container">
         <nav className="nav-bar">
-          <Link to="/dashboard" className="nav-logo">🐮 Acowale CRM</Link>
-          <button className="btn btn-secondary" onClick={handleLogout}>Logout</button>
+          <Link to="/dashboard" className="nav-logo">
+            🐮 Acowale CRM
+          </Link>
+          <button className="btn btn-secondary" onClick={handleLogout}>
+            Logout
+          </button>
         </nav>
         <main className="dashboard-container" style={{ textAlign: 'center', padding: '60px 20px' }}>
-          <div className="alert alert-danger" style={{ maxWidth: '500px', margin: '0 auto 24px auto' }}>
+          <div
+            className="alert alert-danger"
+            style={{ maxWidth: '500px', margin: '0 auto 24px auto' }}
+          >
             {error || 'Form metrics could not be loaded.'}
           </div>
           <Link to="/dashboard" className="btn btn-primary">
@@ -424,7 +487,9 @@ export const Analytics: React.FC = () => {
 
   // Breakdown statistics values
   const totalSubmissions = analytics.totalCount;
-  const averageRating = analytics.averageRating ? Number(analytics.averageRating).toFixed(1) : 'N/A';
+  const averageRating = analytics.averageRating
+    ? Number(analytics.averageRating).toFixed(1)
+    : 'N/A';
   const receivedCount = analytics.statusBreakdown.RECEIVED || 0;
   const inProgressCount = analytics.statusBreakdown.IN_PROGRESS || 0;
 
@@ -432,12 +497,18 @@ export const Analytics: React.FC = () => {
     <div className="layout-container">
       {/* Navigation */}
       <nav className="nav-bar">
-        <Link to="/dashboard" className="nav-logo">🐮 Acowale CRM</Link>
+        <Link to="/dashboard" className="nav-logo">
+          🐮 Acowale CRM
+        </Link>
         <div className="nav-links">
           <span className="nav-user">
             Business: <strong>{user?.businessName}</strong> ({user?.email})
           </span>
-          <button className="btn btn-secondary" onClick={handleLogout} style={{ padding: '6px 12px', fontSize: '0.85rem' }}>
+          <button
+            className="btn btn-secondary"
+            onClick={handleLogout}
+            style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+          >
             Logout
           </button>
         </div>
@@ -447,18 +518,28 @@ export const Analytics: React.FC = () => {
       <main className="dashboard-container">
         {/* Header Section */}
         <div style={{ marginBottom: '24px' }}>
-          <Link to="/dashboard" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.9rem' }}>
+          <Link
+            to="/dashboard"
+            style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.9rem' }}
+          >
             ← Back to Dashboard
           </Link>
         </div>
 
-        <div className="dashboard-header" style={{ alignItems: 'flex-start', marginBottom: '32px' }}>
+        <div
+          className="dashboard-header"
+          style={{ alignItems: 'flex-start', marginBottom: '32px' }}
+        >
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}
+            >
               <h1 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'Outfit, sans-serif' }}>
                 {form.title} Metrics
               </h1>
-              <span className={`form-item-status ${form.isActive ? 'status-active' : 'status-inactive'}`}>
+              <span
+                className={`form-item-status ${form.isActive ? 'status-active' : 'status-inactive'}`}
+              >
                 {form.isActive ? 'Active' : 'Inactive'}
               </span>
             </div>
@@ -466,7 +547,7 @@ export const Analytics: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '12px' }}>
-            <a 
+            <a
               href={`${window.location.origin}/f/${form.slug}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -475,7 +556,11 @@ export const Analytics: React.FC = () => {
             >
               🔗 Public Page
             </a>
-            <Link to={`/forms/${form.id}/edit`} className="btn btn-primary" style={{ textDecoration: 'none' }}>
+            <Link
+              to={`/forms/${form.id}/edit`}
+              className="btn btn-primary"
+              style={{ textDecoration: 'none' }}
+            >
               ✏️ Edit Form Settings
             </Link>
           </div>
@@ -496,7 +581,10 @@ export const Analytics: React.FC = () => {
             <div className="metric-label">In Progress</div>
           </div>
           <div className="metric-card" style={{ borderTop: '3px solid var(--accent)' }}>
-            <div className="metric-value" style={{ color: averageRating !== 'N/A' ? 'var(--warning)' : 'inherit' }}>
+            <div
+              className="metric-value"
+              style={{ color: averageRating !== 'N/A' ? 'var(--warning)' : 'inherit' }}
+            >
               {averageRating !== 'N/A' ? `${averageRating} ★` : 'N/A'}
             </div>
             <div className="metric-label">Avg Rating</div>
@@ -507,7 +595,14 @@ export const Analytics: React.FC = () => {
         <div className="main-grid" style={{ marginBottom: '40px' }}>
           {/* Donut Chart Card */}
           <div className="card">
-            <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1.15rem', marginBottom: '24px' }}>
+            <h3
+              style={{
+                fontFamily: 'Outfit, sans-serif',
+                fontWeight: 700,
+                fontSize: '1.15rem',
+                marginBottom: '24px',
+              }}
+            >
               Category Distribution
             </h3>
             <DonutChart data={analytics.categoryDistribution} />
@@ -515,7 +610,14 @@ export const Analytics: React.FC = () => {
 
           {/* Line Chart Card */}
           <div className="card">
-            <h3 style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 700, fontSize: '1.15rem', marginBottom: '24px' }}>
+            <h3
+              style={{
+                fontFamily: 'Outfit, sans-serif',
+                fontWeight: 700,
+                fontSize: '1.15rem',
+                marginBottom: '24px',
+              }}
+            >
               30-Day Submission Trend
             </h3>
             <TrendChart trend={analytics.trend} />
@@ -524,14 +626,32 @@ export const Analytics: React.FC = () => {
 
         {/* Recent Submissions Section */}
         <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '16px',
+              marginBottom: '24px',
+            }}
+          >
             <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.35rem', fontWeight: 700 }}>
               Feedback Responses
             </h2>
 
             {/* Filters Row */}
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', flex: 1, justifyContent: 'flex-end', maxWidth: '800px' }}>
-              
+            <div
+              style={{
+                display: 'flex',
+                gap: '12px',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                flex: 1,
+                justifyContent: 'flex-end',
+                maxWidth: '800px',
+              }}
+            >
               {/* Search Bar */}
               <div className="search-input-wrapper" style={{ maxWidth: '240px' }}>
                 <span className="search-icon">🔍</span>
@@ -549,12 +669,17 @@ export const Analytics: React.FC = () => {
               <select
                 className="form-select"
                 value={categoryFilter}
-                onChange={(e) => { setCategoryFilter(e.target.value); setCurrentPage(1); }}
+                onChange={(e) => {
+                  setCategoryFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
                 style={{ width: 'auto', padding: '8px 12px', fontSize: '0.85rem' }}
               >
                 <option value="">All Categories</option>
                 {form.categories.map((cat, idx) => (
-                  <option key={idx} value={cat}>{cat}</option>
+                  <option key={idx} value={cat}>
+                    {cat}
+                  </option>
                 ))}
               </select>
 
@@ -562,7 +687,10 @@ export const Analytics: React.FC = () => {
               <select
                 className="form-select"
                 value={statusFilter}
-                onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
                 style={{ width: 'auto', padding: '8px 12px', fontSize: '0.85rem' }}
               >
                 <option value="">All Statuses</option>
@@ -605,9 +733,24 @@ export const Analytics: React.FC = () => {
                             onChange={(e) => handleStatusChange(sub.id, e.target.value)}
                             style={{ cursor: 'pointer', border: 'none', outline: 'none' }}
                           >
-                            <option value="RECEIVED" style={{ background: '#121826', color: 'var(--text-main)' }}>Received</option>
-                            <option value="IN_PROGRESS" style={{ background: '#121826', color: 'var(--text-main)' }}>In Progress</option>
-                            <option value="RESOLVED" style={{ background: '#121826', color: 'var(--text-main)' }}>Resolved</option>
+                            <option
+                              value="RECEIVED"
+                              style={{ background: '#121826', color: 'var(--text-main)' }}
+                            >
+                              Received
+                            </option>
+                            <option
+                              value="IN_PROGRESS"
+                              style={{ background: '#121826', color: 'var(--text-main)' }}
+                            >
+                              In Progress
+                            </option>
+                            <option
+                              value="RESOLVED"
+                              style={{ background: '#121826', color: 'var(--text-main)' }}
+                            >
+                              Resolved
+                            </option>
                           </select>
                         </td>
 
@@ -621,7 +764,11 @@ export const Analytics: React.FC = () => {
                         {/* Submitter */}
                         <td>
                           <span style={{ fontSize: '0.85rem', color: '#e2e8f0' }}>
-                            {sub.email || <span style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>Anonymous</span>}
+                            {sub.email || (
+                              <span style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>
+                                Anonymous
+                              </span>
+                            )}
                           </span>
                         </td>
 
@@ -632,13 +779,30 @@ export const Analytics: React.FC = () => {
                               {'★'.repeat(sub.rating)}
                             </span>
                           ) : (
-                            <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontStyle: 'italic' }}>None</span>
+                            <span
+                              style={{
+                                color: 'var(--text-muted)',
+                                fontSize: '0.8rem',
+                                fontStyle: 'italic',
+                              }}
+                            >
+                              None
+                            </span>
                           )}
                         </td>
 
                         {/* Truncated Comment */}
                         <td>
-                          <span title={sub.comment} style={{ display: 'block', maxWidth: '380px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <span
+                            title={sub.comment}
+                            style={{
+                              display: 'block',
+                              maxWidth: '380px',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
                             {sub.comment}
                           </span>
                         </td>
@@ -659,13 +823,14 @@ export const Analytics: React.FC = () => {
               {pagination && pagination.totalPages > 1 && (
                 <div className="pagination-controls">
                   <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                    Showing page <strong>{pagination.page}</strong> of <strong>{pagination.totalPages}</strong> ({pagination.total} total responses)
+                    Showing page <strong>{pagination.page}</strong> of{' '}
+                    <strong>{pagination.totalPages}</strong> ({pagination.total} total responses)
                   </span>
 
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
                       className="btn btn-secondary"
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                       disabled={currentPage === 1}
                       style={{ padding: '6px 12px', fontSize: '0.85rem' }}
                     >
@@ -673,7 +838,9 @@ export const Analytics: React.FC = () => {
                     </button>
                     <button
                       className="btn btn-secondary"
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, pagination.totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, pagination.totalPages))
+                      }
                       disabled={currentPage === pagination.totalPages}
                       style={{ padding: '6px 12px', fontSize: '0.85rem' }}
                     >

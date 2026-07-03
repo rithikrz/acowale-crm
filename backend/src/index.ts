@@ -23,14 +23,14 @@ import type { AuthUser } from './types.js';
 // Request tracing and logging middleware
 app.use((req: Request & { id?: string; user?: AuthUser }, res, next) => {
   req.id = crypto.randomUUID();
-  
+
   // Log request start
   logger.info({
     msg: 'Incoming request',
     method: req.method,
     url: req.url,
     requestId: req.id,
-    ip: req.ip
+    ip: req.ip,
   });
 
   // Log request completion on finish
@@ -42,17 +42,19 @@ app.use((req: Request & { id?: string; user?: AuthUser }, res, next) => {
       url: req.url,
       status: res.statusCode,
       requestId: req.id,
-      userId
+      userId,
     });
   });
 
   next();
 });
 
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -72,7 +74,7 @@ app.get('/health', async (_req, res) => {
 app.get('/api/hello', (_req, res) => {
   const response: ApiResponse<string> = {
     success: true,
-    data: 'Hello World from Acowale CRM Backend!'
+    data: 'Hello World from Acowale CRM Backend!',
   };
   res.json(response);
 });
@@ -88,5 +90,7 @@ app.use('/api/dashboard', dashboardRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  logger.info(`Backend server running on http://localhost:${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+  logger.info(
+    `Backend server running on http://localhost:${PORT} in ${process.env.NODE_ENV || 'development'} mode`,
+  );
 });

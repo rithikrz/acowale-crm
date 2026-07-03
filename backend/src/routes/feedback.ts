@@ -18,7 +18,7 @@ router.get('/', async (req: AuthenticatedRequest, res, next) => {
     if (formId && typeof formId === 'string') {
       // Verify ownership of the specified form
       const ownedForm = await prisma.form.findFirst({
-        where: { id: formId, userId }
+        where: { id: formId, userId },
       });
       if (!ownedForm) {
         throw new AppError(403, 'You do not have permission to view feedback for this form');
@@ -28,14 +28,14 @@ router.get('/', async (req: AuthenticatedRequest, res, next) => {
 
     const feedbacks = await prisma.feedback.findMany({
       where: {
-        form: formFilter
+        form: formFilter,
       },
       include: {
         form: {
-          select: { title: true }
-        }
+          select: { title: true },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
 
     const response: ApiResponse<unknown> = {
@@ -49,8 +49,8 @@ router.get('/', async (req: AuthenticatedRequest, res, next) => {
         email: f.email,
         rating: f.rating,
         status: f.status,
-        createdAt: f.createdAt.toISOString()
-      }))
+        createdAt: f.createdAt.toISOString(),
+      })),
     };
 
     res.json(response);
@@ -73,7 +73,7 @@ router.patch('/:id/status', async (req: AuthenticatedRequest, res, next) => {
     // Find the feedback item and verify ownership of the form it belongs to
     const feedback = await prisma.feedback.findUnique({
       where: { id },
-      include: { form: true }
+      include: { form: true },
     });
 
     if (!feedback) {
@@ -86,7 +86,7 @@ router.patch('/:id/status', async (req: AuthenticatedRequest, res, next) => {
 
     const updatedFeedback = await prisma.feedback.update({
       where: { id },
-      data: { status }
+      data: { status },
     });
 
     const response: ApiResponse<unknown> = {
@@ -94,8 +94,8 @@ router.patch('/:id/status', async (req: AuthenticatedRequest, res, next) => {
       message: 'Status updated successfully',
       data: {
         id: updatedFeedback.id,
-        status: updatedFeedback.status
-      }
+        status: updatedFeedback.status,
+      },
     };
 
     res.json(response);
