@@ -82,7 +82,7 @@ router.post('/signup', validate(signupSchema), async (req, res, next) => {
 
     logger.info({ msg: 'New business user signed up', userId: user.id, email: user.email });
 
-    const response: ApiResponse<AuthResponse> = {
+    const response: ApiResponse<AuthResponse & { token: string }> = {
       success: true,
       message: 'Signup successful',
       data: {
@@ -91,6 +91,7 @@ router.post('/signup', validate(signupSchema), async (req, res, next) => {
           email: user.email,
           businessName: user.businessName,
         },
+        token,
       },
     };
 
@@ -137,7 +138,7 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
 
     logger.info({ msg: 'Business user logged in', userId: user.id, email: user.email });
 
-    const response: ApiResponse<AuthResponse> = {
+    const response: ApiResponse<AuthResponse & { token: string }> = {
       success: true,
       message: 'Login successful',
       data: {
@@ -146,6 +147,7 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
           email: user.email,
           businessName: user.businessName,
         },
+        token,
       },
     };
 
@@ -162,3 +164,4 @@ router.post('/logout', (_req, res) => {
 });
 
 export default router;
+
