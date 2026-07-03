@@ -49,9 +49,12 @@ app.use((req: Request & { id?: string; user?: AuthUser }, res, next) => {
   next();
 });
 
+// Parse allowed origins from environment variable
+const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:5173').split(',').map(origin => origin.trim());
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: allowedOrigins,
     credentials: true,
   }),
 );
@@ -94,3 +97,4 @@ app.listen(PORT, () => {
     `Backend server running on http://localhost:${PORT} in ${process.env.NODE_ENV || 'development'} mode`,
   );
 });
+
