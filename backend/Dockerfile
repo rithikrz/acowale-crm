@@ -2,6 +2,8 @@
 FROM node:20-bookworm-slim AS builder
 WORKDIR /usr/src/app
 
+RUN apt-get update -y && apt-get install -y openssl ca-certificates
+
 COPY package*.json ./
 COPY backend/package*.json ./backend/
 COPY frontend/package*.json ./frontend/
@@ -14,6 +16,8 @@ RUN npm run build --workspace=backend
 # Production Stage
 FROM node:20-bookworm-slim
 WORKDIR /usr/src/app
+
+RUN apt-get update -y && apt-get install -y openssl ca-certificates
 
 COPY package*.json ./
 COPY backend/package*.json ./backend/
