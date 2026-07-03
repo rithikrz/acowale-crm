@@ -18,13 +18,13 @@ export const requireAuth = async (
   try {
     let token: string | undefined;
 
-    // 1. Check cookies
-    if (req.cookies && req.cookies.token) {
-      token = req.cookies.token;
-    }
-    // 2. Check Authorization header
-    else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    // 1. Check Authorization header first (Bearer token)
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
       token = req.headers.authorization.split(' ')[1];
+    }
+    // 2. Check cookies as fallback
+    else if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
     }
 
     if (!token) {
@@ -63,3 +63,4 @@ export const requireAuth = async (
     next(error);
   }
 };
+
