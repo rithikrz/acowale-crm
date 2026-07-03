@@ -40,7 +40,14 @@ export const FormEditor: React.FC = () => {
         setFetching(true);
         setError(null);
 
-        const response = await fetch(`${API_BASE}/forms/${id}`, { credentials: 'include' });
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE}/forms/${id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          },
+          credentials: 'include',
+        });
         if (!response.ok) {
           if (response.status === 403) throw new Error('You do not have access to this form');
           throw new Error('Failed to retrieve form details');
@@ -114,9 +121,13 @@ export const FormEditor: React.FC = () => {
       const url = isEditMode ? `${API_BASE}/forms/${id}` : `${API_BASE}/forms`;
       const method = isEditMode ? 'PATCH' : 'POST';
 
+      const token = localStorage.getItem('token');
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           title,
           description,

@@ -337,8 +337,17 @@ export const Analytics: React.FC = () => {
         setLoading(true);
         setError(null);
 
+        const token = localStorage.getItem('token');
+        const authHeaders = {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        };
+
         // 1. Fetch Form settings details
-        const formRes = await fetch(`${API_BASE}/forms/${id}`, { credentials: 'include' });
+        const formRes = await fetch(`${API_BASE}/forms/${id}`, {
+          headers: authHeaders,
+          credentials: 'include',
+        });
         if (!formRes.ok) {
           if (formRes.status === 404) throw new Error('Form not found or access denied');
           throw new Error('Failed to retrieve form configurations');
@@ -347,6 +356,7 @@ export const Analytics: React.FC = () => {
 
         // 2. Fetch Aggregated Analytics
         const analyticsRes = await fetch(`${API_BASE}/forms/${id}/analytics?days=30`, {
+          headers: authHeaders,
           credentials: 'include',
         });
         if (!analyticsRes.ok) throw new Error('Failed to load form analytics');
@@ -384,7 +394,12 @@ export const Analytics: React.FC = () => {
         if (statusFilter) queryParams.append('status', statusFilter);
         if (debouncedSearch) queryParams.append('search', debouncedSearch);
 
+        const token = localStorage.getItem('token');
         const response = await fetch(`${API_BASE}/forms/${id}/feedback?${queryParams.toString()}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          },
           credentials: 'include',
         });
         if (!response.ok) throw new Error('Failed to fetch submissions list');
@@ -406,9 +421,13 @@ export const Analytics: React.FC = () => {
 
   const handleStatusChange = async (submissionId: string, newStatus: string) => {
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE}/feedback/${submissionId}/status`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ status: newStatus }),
         credentials: 'include',
       });

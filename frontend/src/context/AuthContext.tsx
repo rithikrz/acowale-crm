@@ -21,19 +21,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const checkSession = async () => {
       try {
+        const token = localStorage.getItem('token');
         const response = await fetch(`${API_BASE}/auth/me`, {
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include', // Include cookie session
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          },
+          credentials: 'include', // Include cookie session as fallback
         });
 
         if (response.ok) {
           const resData = await response.json();
           if (resData.success && resData.data?.user) {
             setUser(resData.data.user);
+          } else {
+            localStorage.removeItem('token');
           }
+        } else {
+          localStorage.removeItem('token');
         }
       } catch (error) {
         console.error('Session restoration failed:', error);
+        localStorage.removeItem('token');
       } finally {
         setLoading(false);
       }
@@ -56,6 +65,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error(resData.error || 'Failed to log in');
     }
 
+    if (resData.data?.token) {
+      localStorage.setItem('token', resData.data.token);
+    }
     setUser(resData.data.user);
   };
 
@@ -73,18 +85,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error(resData.error || 'Failed to sign up');
     }
 
+    if (resData.data?.token) {
+      localStorage.setItem('token', resData.data.token);
+    }
     setUser(resData.data.user);
   };
 
   const logout = async () => {
     try {
+      const token = localStorage.getItem('token');
       await fetch(`${API_BASE}/auth/logout`, {
         method: 'POST',
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
         credentials: 'include',
       });
     } catch (error) {
       console.error('Logout request failed:', error);
     } finally {
+      localStorage.removeItem('token');
       setUser(null);
     }
   };

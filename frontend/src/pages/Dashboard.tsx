@@ -44,9 +44,17 @@ export const Dashboard: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
+      const token = localStorage.getItem('token');
+      const authHeaders = {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      };
 
       // Fetch Forms
-      const formsRes = await fetch(`${API_BASE}/forms`, { credentials: 'include' });
+      const formsRes = await fetch(`${API_BASE}/forms`, {
+        headers: authHeaders,
+        credentials: 'include',
+      });
       if (!formsRes.ok) throw new Error('Failed to fetch forms');
       const formsData = await formsRes.json();
 
@@ -56,7 +64,10 @@ export const Dashboard: React.FC = () => {
           ? `${API_BASE}/feedback`
           : `${API_BASE}/feedback?formId=${selectedFormFilter}`;
 
-      const feedbackRes = await fetch(feedbackUrl, { credentials: 'include' });
+      const feedbackRes = await fetch(feedbackUrl, {
+        headers: authHeaders,
+        credentials: 'include',
+      });
       if (!feedbackRes.ok) throw new Error('Failed to fetch feedback data');
       const feedbackData = await feedbackRes.json();
 
@@ -84,9 +95,13 @@ export const Dashboard: React.FC = () => {
 
   const handleStatusChange = async (feedbackId: string, newStatus: string) => {
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_BASE}/feedback/${feedbackId}/status`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ status: newStatus }),
         credentials: 'include',
       });
