@@ -7,9 +7,9 @@ A business signs up for an account, designs feedback forms with custom categorie
 
 ## 🚀 Live Demo URLs
 
-- **Frontend Dashboard**: `https://acowale-crm.vercel.app`
-- **Backend API Base**: `https://acowale-crm-api.up.railway.app`
-- **Backend Health Check**: `https://acowale-crm-api.up.railway.app/health`
+- **Frontend Dashboard**: `[https://acowale-crm.vercel.app](https://acowale-crm-frontend-ten.vercel.app)`
+- **Backend API Base**: `[https://acowale-crm-api.up.railway.app`](https://backend-production-412af.up.railway.app/)`
+- **Backend Health Check**: `[https://acowale-crm-api.up.railway.app](https://backend-production-412af.up.railway.app/)/health`
 
 ---
 
